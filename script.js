@@ -85,7 +85,7 @@ function processAndPlayAudio(blob) {
           document.getElementById('spinner').style.display = 'none';
           isProcessing = false;
           updateVisualizerDisplay();
-          playAudio();
+          //playAudio();
           // Removed the automatic play.
         })
         .catch(error => {
