@@ -85,6 +85,7 @@ function processAndPlayAudio(blob) {
           document.getElementById('spinner').style.display = 'none';
           isProcessing = false;
           updateVisualizerDisplay();
+          playAudio();
           // Removed the automatic play.
         })
         .catch(error => {
@@ -269,6 +270,45 @@ function startRecording() {
   });
 }
 
+function playAudio() {
+  if (audio.paused) {
+    // Resume audio
+    audio.play();
+
+    if (audioBuffer) {
+      source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(analyser);
+      source.start(0);
+      draw();
+    }
+
+    // Switch to pause icon
+    const recordIcon = document.getElementById('record').querySelector('i');
+    recordIcon.classList.remove('fa-play');
+    recordIcon.classList.add('fa-pause');
+
+    // Change the button color to default (assuming default color is white)
+    recordIcon.style.color = "#FFFFFF";
+  } else {
+    // Pause audio
+    audio.pause();
+
+    if (source) {
+      source.disconnect();
+    }
+
+    // Switch to play icon
+    const recordIcon = document.getElementById('record').querySelector('i');
+    recordIcon.classList.remove('fa-pause');
+    recordIcon.classList.add('fa-play');
+
+    // Change the button color to default (assuming default color is white)
+    recordIcon.style.color = "#FFFFFF";
+  }
+}
+
+
 document.getElementById("record").addEventListener("click", function () {
   const recordButton = document.getElementById('record');
   const recordIcon = recordButton.querySelector('i');
@@ -287,6 +327,7 @@ document.getElementById("record").addEventListener("click", function () {
       isRecording = false;
 
 
+
       
       // Switch to play icon
       recordIcon.classList.remove('fa-stop');
@@ -298,40 +339,8 @@ document.getElementById("record").addEventListener("click", function () {
     }
     
   } else if (audio) {
-    if (audio.paused) {
-      // Resume audio
-      audio.play();
-
-      if (audioBuffer) {
-        source = audioContext.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(analyser);
-        source.start(0);
-        draw();
-      }
-      
-      // Switch to pause icon
-      recordIcon.classList.remove('fa-play');
-      recordIcon.classList.add('fa-pause');
-
-      // Change the button color to default (assuming default color is white)
-      recordButton.querySelector('i').style.color = "#FFFFFF";
-    } else {
-      // Pause audio
-      audio.pause();
-
-      if (source) {
-        source.disconnect();
-      }
-
-      // Switch to play icon
-      recordIcon.classList.remove('fa-pause');
-      recordIcon.classList.add('fa-play');
-
-      // Change the button color to default (assuming default color is white)
-      recordButton.querySelector('i').style.color = "#FFFFFF";
+    playAudio();
     }
-  }
 });
 
 
