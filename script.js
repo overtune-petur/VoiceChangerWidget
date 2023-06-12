@@ -51,6 +51,8 @@ function processAndPlayAudio(blob) {
     	
       audioBlob = processedBlob;
       const audioUrl = URL.createObjectURL(audioBlob);
+      audio = new Audio(audioUrl);
+      audio.volume = 1.0; 
 
       fetch(audioUrl)
         .then(response => response.arrayBuffer())
