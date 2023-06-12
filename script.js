@@ -13,6 +13,8 @@ let isRecording = false;
 let isProcessing = false;
 let audioBuffer;
 
+
+
 function updateVisualizerDisplay() {
   if (isProcessing === false) {
     document.getElementById("visualizer-container").style.display = 'block';
@@ -51,6 +53,7 @@ function processAndPlayAudio(blob) {
     	
       audioBlob = processedBlob;
       const audioUrl = URL.createObjectURL(audioBlob);
+      document.getElementsByTagName("audio")[0].src = audioUrl;
       audio = new Audio(audioUrl);
       audio.volume = 1.0; 
 
@@ -100,6 +103,8 @@ function processAndPlayAudio(blob) {
       
     });
 }
+
+
 
 let resizeObserver = new ResizeObserver(entries => {
   for (let entry of entries) {
