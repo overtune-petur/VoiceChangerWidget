@@ -53,7 +53,6 @@ function processAndPlayAudio(blob) {
     	
       audioBlob = processedBlob;
       const audioUrl = URL.createObjectURL(audioBlob);
-      document.getElementsByTagName("audio")[0].src = audioUrl;
       audio = new Audio(audioUrl);
       audio.volume = 1.0; 
 
@@ -66,7 +65,14 @@ function processAndPlayAudio(blob) {
           if (audioBuffer) {
             source = audioContext.createBufferSource();
             source.buffer = audioBuffer;
-            source.connect(analyser);
+            // Create a GainNode
+            var gainNode = audioContext.createGain();
+
+            // Connect the source to the gain node.
+            source.connect(gainNode);
+
+            // Connect the gain node to the analyser.
+            gainNode.connect(analyser);
             source.start(0);
             draw();
           }
@@ -294,6 +300,7 @@ function playAudio() {
     const recordIcon = document.getElementById('record').querySelector('i');
     recordIcon.classList.remove('fa-play');
     recordIcon.classList.add('fa-pause');
+
 
     // Change the button color to default (assuming default color is white)
     recordIcon.style.color = "#FFFFFF";
