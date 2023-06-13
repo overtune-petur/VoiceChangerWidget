@@ -14,7 +14,6 @@ let isProcessing = false;
 let audioBuffer;
 
 
-
 function updateVisualizerDisplay() {
   if (isProcessing === false) {
     document.getElementById("visualizer-container").style.display = 'block';
@@ -246,89 +245,70 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
 }
 
 
+let context;
+
 function startRecording() {
-  getStream().then(stream => {
-    if (!audioContext) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioContext.createAnalyser();
-      dataArray = new Uint8Array(analyser.fftSize);
-      canvas = document.getElementById("visualizer");
-      canvasCtx = canvas.getContext("2d");
-    }
+  if (!context) {
+    context = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Silence
+    let oscillator = context.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.frequency.value = context.sampleRate / 2; // This is the maximum frequency
+    
+    // Start silence
+    let silence = context.createGain();
+    oscillator.connect(silence);
+    silence.gain.value = 0; // Gain can be changed to 0, it's just to "force" playing
+    silence.connect(context.destination);
+    oscillator.start(0);
+  }
 
-    source = audioContext.createMediaStreamSource(stream);
-    source.connect(analyser);
-
-    mediaRecorder = new MediaRecorder(stream);
-
-    mediaRecorder.addEventListener("dataavailable", event => {
-      audioChunks.push(event.data);
-    });
-
-    mediaRecorder.addEventListener("stop", () => {
-      audioBlob = new Blob(audioChunks, { type: "audio/ogg; codecs=opus" });
-      audioChunks = [];
+  context.resume().then(() => {
+    getStream().then(stream => {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        dataArray = new Uint8Array(analyser.fftSize);
+        canvas = document.getElementById("visualizer");
+        canvasCtx = canvas.getContext("2d");
+      }
+  
+      source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+  
+      mediaRecorder = new MediaRecorder(stream);
+  
+      mediaRecorder.addEventListener("dataavailable", event => {
+        audioChunks.push(event.data);
+      });
+  
+      mediaRecorder.addEventListener("stop", () => {
+        audioBlob = new Blob(audioChunks, { type: "audio/ogg; codecs=opus" });
+        audioChunks = [];
+        isProcessing = false;
+        updateVisualizerDisplay();
+  
+        document.getElementById("reset").style.display = "block";
+  
+        processAndPlayAudio(audioBlob);
+      });
+  
+      mediaRecorder.start();
       isProcessing = false;
       updateVisualizerDisplay();
-
-      document.getElementById("reset").style.display = "block";
-
-      processAndPlayAudio(audioBlob);
-    });
-
-    mediaRecorder.start();
-    isProcessing = false;
-    updateVisualizerDisplay();
-    isRecording = true;
-    document.getElementById('message').style.display = 'none';
-    const recordButton = document.getElementById('record');
-    recordButton.querySelector('i').classList.remove("fa-microphone");
-    recordButton.querySelector('i').classList.add("fa-stop");
-    recordButton.querySelector('i').style.color = "#FC0C84";
-    document.getElementById('reset').style.display = 'none';
-    draw();
-
-    recordButton.classList.add("active");
-  });
-}
-
-function playAudio() {
-  if (audio.paused) {
-    // Resume audio
-    audio.play();
-
-    if (audioBuffer) {
-      source = audioContext.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(analyser);
-      source.start(0);
+      isRecording = true;
+      document.getElementById('message').style.display = 'none';
+      const recordButton = document.getElementById('record');
+      recordButton.querySelector('i').classList.remove("fa-microphone");
+      recordButton.querySelector('i').classList.add("fa-stop");
+      recordButton.querySelector('i').style.color = "#FC0C84";
+      document.getElementById('reset').style.display = 'none';
       draw();
-    }
-
-    // Switch to pause icon
-    const recordIcon = document.getElementById('record').querySelector('i');
-    recordIcon.classList.remove('fa-play');
-    recordIcon.classList.add('fa-pause');
-
-
-    // Change the button color to default (assuming default color is white)
-    recordIcon.style.color = "#FFFFFF";
-  } else {
-    // Pause audio
-    audio.pause();
-
-    if (source) {
-      source.disconnect();
-    }
-
-    // Switch to play icon
-    const recordIcon = document.getElementById('record').querySelector('i');
-    recordIcon.classList.remove('fa-pause');
-    recordIcon.classList.add('fa-play');
-
-    // Change the button color to default (assuming default color is white)
-    recordIcon.style.color = "#FFFFFF";
-  }
+  
+      recordButton.classList.add("active");
+    });
+  });
 }
 
 
