@@ -23,8 +23,15 @@ function updateVisualizerDisplay() {
   }
 }
 
+function removeEventListeners() {
+  if (mediaRecorder) {
+    mediaRecorder.removeEventListener("dataavailable");
+    mediaRecorder.removeEventListener("stop");
+  }
+}
+
 function processAndPlayAudio(blob) {	
-  let formData = new FormData();
+  let formData = new FormData();  
   
   document.getElementById('spinner').style.display = 'block';
   isProcessing = true;
@@ -50,11 +57,10 @@ function processAndPlayAudio(blob) {
     })
 
     .then(processedBlob => {
-    	
-      audioBlob = processedBlob;
-      const audioUrl = URL.createObjectURL(audioBlob);
-      audio = new Audio(audioUrl);
-      audio.volume = 1.0; 
+        audioBlob = processedBlob;
+        const audioUrl = URL.createObjectURL(audioBlob);
+        //audio = new Audio(audioUrl);
+        //audio.volume = 1.0; 
 
       fetch(audioUrl)
         .then(response => response.arrayBuffer())
@@ -80,6 +86,7 @@ function processAndPlayAudio(blob) {
           audio = new Audio(audioUrl);
           audio.onended = function() {
             draw(); // Redraw when audio ends.
+            removeEventListeners();
           };
           audio.onended = function() {
             const recordButton = document.getElementById('record');
