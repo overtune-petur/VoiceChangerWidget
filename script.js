@@ -77,6 +77,8 @@ function processAndPlayAudio(blob) {
             // Connect the source to the gain node.
             source.connect(gainNode);
 
+            gainNode.connect(audioContext.destination);
+
             // Connect the gain node to the analyser.
             gainNode.connect(analyser);
             source.start(0);
