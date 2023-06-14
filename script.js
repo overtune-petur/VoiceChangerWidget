@@ -31,6 +31,7 @@ function removeEventListeners() {
 }
 
 function processAndPlayAudio(blob) {	
+  initAudioContext();
   let formData = new FormData();  
   
   document.getElementById('spinner').style.display = 'block';
@@ -246,15 +247,18 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
 }
 
 
-function startRecording() {
-  getStream().then(stream => {
-    if (!audioContext) {
+function initAudioContext() {
+      if(audioContext) audioContext.close();
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
       analyser = audioContext.createAnalyser();
       dataArray = new Uint8Array(analyser.fftSize);
       canvas = document.getElementById("visualizer");
       canvasCtx = canvas.getContext("2d");
-    }
+}
+
+function startRecording() {
+  getStream().then(stream => {
+    initAudioContext();
 
     source = audioContext.createMediaStreamSource(stream);
     source.connect(analyser);
@@ -266,6 +270,7 @@ function startRecording() {
     });
 
     mediaRecorder.addEventListener("stop", () => {
+      stream.getTracks().forEach(track => track.stop());
       audioBlob = new Blob(audioChunks, { type: "audio/ogg; codecs=opus" });
       audioChunks = [];
       isProcessing = false;
@@ -388,4 +393,3 @@ document.getElementById('reset').addEventListener('click', function () {
   // Now, trigger the start recording logic
   startRecording();
 });
-
