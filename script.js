@@ -30,7 +30,7 @@ function removeEventListeners() {
   }
 }
 
-function processAndPlayAudio(blob) {	
+function processAndPlayAudio(blob) {  
   initAudioContext();
   let formData = new FormData();  
   
@@ -60,8 +60,7 @@ function processAndPlayAudio(blob) {
     .then(processedBlob => {
         audioBlob = processedBlob;
         const audioUrl = URL.createObjectURL(audioBlob);
-        //audio = new Audio(audioUrl);
-        //audio.volume = 1.0; 
+
 
       fetch(audioUrl)
         .then(response => response.arrayBuffer())
@@ -116,6 +115,26 @@ function processAndPlayAudio(blob) {
     })
     .catch(error => {
       console.error(error);
+      document.getElementById("spinner").style.display = "none";
+
+      mediaRecorder = null;
+      audioChunks = [];
+      audioBlob = null;
+      audio = null;
+      source = null;
+      stream = null;
+      if (requestId) {
+        cancelAnimationFrame(requestId);
+        requestId = null;
+      }
+
+      // Reset the visuals of the record button
+      const recordButton = document.getElementById('record');
+      document.getElementById("reset").style.display = 'none';
+      recordButton.querySelector('i').classList = 'fas fa-microphone';
+      recordButton.classList.remove('active');
+      document.getElementById('message').style.display = "block";
+      document.getElementById('message').textContent = 'A problem came up.';
       
     });
 }
@@ -380,6 +399,7 @@ document.getElementById('reset').addEventListener('click', function () {
   audioBlob = null;
   audio = null;
   source = null;
+  stream = null;
   if (requestId) {
     cancelAnimationFrame(requestId);
     requestId = null;
@@ -387,9 +407,11 @@ document.getElementById('reset').addEventListener('click', function () {
 
   // Reset the visuals of the record button
   const recordButton = document.getElementById('record');
+  document.getElementById("reset").style.display = 'none';
   recordButton.querySelector('i').classList = 'fas fa-microphone';
   recordButton.classList.remove('active');
 
   // Now, trigger the start recording logic
-  startRecording();
+
+  //startRecording();
 });
