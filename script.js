@@ -17,9 +17,9 @@ let audioBuffer;
 
 function updateVisualizerDisplay() {
   if (isProcessing === false) {
-    document.getElementById("visualizer-container").style.display = 'block';
+    document.getElementById("visualizer").style.display = 'block';
   } else {
-    document.getElementById("visualizer-container").style.display = 'none';
+    document.getElementById("visualizer").style.display = 'none';
   }
 }
 
