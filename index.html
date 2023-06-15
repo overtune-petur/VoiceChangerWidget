@@ -1,148 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Web Audio Recorder</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<style>
+    #container {
+        border-radius: 10px;
+        background-color: #0F0F0F;
+        display: flex;
+        flex-direction: column;
+        height:100%; 
+        width:100%;
+    }
+
+    #record {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #0F0F0F;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .toprow {
+         flex-grow: 0;
+         padding: 5px;
+     }
+   
+     #message {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 300;
+        color: white;
+        font-size: 10pt;
         
+    }
 
-         #container {
-            border-radius: 10px;
-            background-color: #0F0F0F;
-            display: flex;
-            flex-direction: column;
-            height:100%; 
-            width:100%;
+     .midrow {  
+        display: flex; 
+        flex-grow: 1;
+        align-items: center; 
+        justify-content: center; 
+        position: relative;
+     }
+     #visualizer{
+        width: 50%;
+        height: 100%;
+        padding: 10px;
+        position: absolute; 
+     }
 
-             
+    #reset {
+        position: absolute;
+        right: 5%;  
+        width: 50px;
+        height: 50px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        color: #000;
+        background-color: #fff;
+        border: none;
+        border-radius: 30px;
+        width: 90px;
+        height: 30px;
+        cursor: pointer;
+        outline: none;
+    }
+    .spinner {
+        border: 2px solid #00D7FE;
+        border-radius: 50%;
+        border-top: 2px solid #000;
+        width: 10px;
+        height: 10px;
+        animation: spin 1s linear infinite;
+        display: none; 
+    }
 
-         }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
-        #record {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #0F0F0F;
-            border: 2px solid #fff;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            outline: none;
-        }
+     .bottomrow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        flex-direction: row;
+        padding: 40px;
+     }
 
-        
+     .fas {
+        font-size: 20px;
+        color: #fff;
+    }
+</style>
+<div id="container">
+    <div class="toprow">
+        <a href="https://www.overtune.com" target="_blank">
+        <img id="OTLogo" src="./OvertuneVoiceChanger.svg" alt="Description of the image">
+        </a>
+    </div>
+    <div class="midrow">
+        <canvas id="visualizer"></canvas>
+        <p id="message" style=" ">Record to change your voice</p>
+        <div id="spinner" class="spinner"></div>    
+    </div>
+    <div class="bottomrow">
+        <button id="record">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <button id="reset">Try again</button>
+    </div>
+</div>
 
-        .toprow {
-             flex-grow: 0;
-             padding: 5px;
-         }
-       
-         #message {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 300;
-            color: white;
-            font-size: 10pt;
-            
-        }
-
-         .midrow {  
-            display: flex; 
-            flex-grow: 1;
-            align-items: center; 
-            justify-content: center; 
-            position: relative;
-         }
-         #visualizer{
-            width: 50%;
-            height: 100%;
-            padding: 10px;
-            position: absolute; 
-         }
-
-        #reset {
-            position: absolute;
-            right: 5%;  
-            width: 50px;
-            height: 50px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 13px;
-            color: #000;
-            background-color: #fff;
-            border: none;
-            border-radius: 30px;
-            width: 90px;
-            height: 30px;
-            cursor: pointer;
-            outline: none;
-        }
-        .spinner {
-            border: 2px solid #00D7FE;
-            border-radius: 50%;
-            border-top: 2px solid #000;
-            width: 10px;
-            height: 10px;
-            animation: spin 1s linear infinite;
-            display: none; 
-        }
-
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-
-         .bottomrow {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            
-            flex-direction: row;
-            padding: 40px;
-         }
-
-         .fas {
-            font-size: 20px;
-            color: #fff;
-        }   
-    </style>
-</head>
-<body>
-    
-        <div id="container">
-            <div class="toprow">
-                <a href="https://www.overtune.com" target="_blank">
-                <img id="OTLogo" src="./OvertuneVoiceChanger.svg" alt="Description of the image">
-            </a>
-            </div>
-            <div class="midrow">
-                <canvas id="visualizer"></canvas>
-                
-                <p id="message" style=" ">Record to change your voice</p>
-                <div id="spinner" class="spinner"></div>    
-               </div>
-            <div class="bottomrow">
-                <button id="record">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button id="reset">Try again</button>
-            </div>
-        </div>
-    
-    <script src="./script.js"></script>
-</body>
-</html>
+<script src="./script.js"></script>
