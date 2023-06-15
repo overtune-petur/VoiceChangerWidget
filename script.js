@@ -39,7 +39,7 @@ function processAndPlayAudio(blob) {
   updateVisualizerDisplay();
 
   formData.append("file", blob, "recordedAudio.wav");
-  formData.append("model_name", "marge");
+  formData.append("model_name", "morgan_freeman");
   formData.append("auto_predict", "false");
 
   const headers = new Headers();
